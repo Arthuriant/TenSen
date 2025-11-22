@@ -38,7 +38,7 @@ export const DocNavigation = () => {
     ]
 
     return (
-        <div className="flex flex-col gap-0.5 mt-4 items-start fixed pe-4" >
+        <div className="flex flex-col gap-0.5 mt-4 items-start sticky top-28 pe-4" >
           {
             DocsNav.map((item) => {
                 return (

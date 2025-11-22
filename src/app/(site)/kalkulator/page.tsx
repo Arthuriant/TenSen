@@ -340,14 +340,28 @@ export default function CentralTendencyPage() {
                 </div>
               </div>
               {/* Kartu Statistik */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-fit">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 h-fit">
                 {statsData.map((stat, idx) => (
-                  <div key={idx} className="bg-white dark:bg-semidark p-3 rounded-xl shadow-md border-l-4 border-[#DB3F59] flex justify-between items-center">
-                    <div>
-                      <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">{stat.label}</p>
-                      <p className="text-lg font-bold text-gray-800 dark:text-white mt-0.5">{stat.value}</p>
+                  <div 
+                    key={idx} 
+                    // UPDATE: Padding diperkecil di HP (p-2.5) dan border kiri sedikit ditipiskan
+                    className="bg-white dark:bg-semidark p-2.5 sm:p-3 rounded-xl shadow-md border-l-[3px] sm:border-l-4 border-[#DB3F59] flex justify-between items-center"
+                  >
+                    <div className="min-w-0"> {/* min-w-0 penting agar truncate berfungsi di dalam flex */}
+                      
+                      {/* UPDATE: Font size label diperkecil sedikit di HP */}
+                      <p className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">
+                        {stat.label}
+                      </p>
+                      
+                      {/* UPDATE: Font size value disesuaikan agar angka besar tidak pecah layout */}
+                      <p className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mt-0.5 truncate" title={stat.value}>
+                        {stat.value}
+                      </p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-red-50 dark:bg-gray-700 flex items-center justify-center text-[#DB3F59] font-serif font-bold italic text-sm">
+
+                    {/* UPDATE: Ukuran lingkaran icon disesuaikan (w-7 h-7 di HP) */}
+                    <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-50 dark:bg-gray-700 flex items-center justify-center text-[#DB3F59] font-serif font-bold italic text-xs sm:text-sm ml-2">
                       {stat.symbol}
                     </div>
                   </div>
@@ -357,15 +371,23 @@ export default function CentralTendencyPage() {
           </section>
 
           {/* 3. BAGIAN STEP BY STEP */}
-          <section id="stepbystep" className="space-y-6 scroll-mt-32">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1 h-8 bg-[#DB3F59] rounded-full"></div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">2. Step by Step Perhitungan</h2>
+{/* 3. BAGIAN STEP BY STEP */}
+          <section id="stepbystep" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
+            
+            {/* Header Section */}
+            <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+                2. Step by Step Perhitungan
+              </h2>
             </div>
-            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-6">
+
+            {/* Content Container */}
+            {/* UPDATE: Padding p-4 di HP, p-6 di Desktop */}
+            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
               {statsData.map((stat, idx) => (
                 <StepAccordion key={idx} title={`Cara Mencari ${stat.label}`}>
-                  <div className="space-y-3">
+                  <div className="space-y-3 text-sm md:text-base">
                     <p>Penjelasan rumus dan perhitungan...</p>
                   </div>
                 </StepAccordion>
@@ -374,19 +396,59 @@ export default function CentralTendencyPage() {
           </section>
 
           {/* 4. BAGIAN GRAFIK */}
-          <section id="grafik" className="space-y-6 scroll-mt-32">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1 h-8 bg-[#DB3F59] rounded-full"></div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">3. Visualisasi Grafik</h2>
+          <section id="grafik" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
+            
+            {/* Header Section */}
+            <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+                3. Visualisasi Grafik
+              </h2>
             </div>
-            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-6 h-[400px]">
+
+            {/* Chart Container */}
+            {/* UPDATE: Tinggi h-[300px] di HP agar compact, h-[400px] di Desktop */}
+            {/* UPDATE: Padding p-4 di HP, p-6 di Desktop */}
+            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6 h-[300px] md:h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
-                  <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#6b7280' }} />
-                  <YAxis stroke="#6b7280" tick={{ fill: '#6b7280' }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
-                  <Bar dataKey="Frekuensi" fill="#DB3F59" radius={[4, 4, 0, 0]} />
+                <BarChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}> 
+                  {/* Margin left -20 di Recharts kadang diperlukan di HP untuk menghemat ruang whitespace kiri */}
+                  
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} vertical={false} />
+                  
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#6b7280" 
+                    tick={{ fill: '#6b7280', fontSize: 12 }} // Font diperkecil agar muat di HP
+                    tickLine={false}
+                    axisLine={false}
+                    dy={10}
+                  />
+                  
+                  <YAxis 
+                    stroke="#6b7280" 
+                    tick={{ fill: '#6b7280', fontSize: 12 }} 
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  
+                  <Tooltip 
+                    cursor={{ fill: 'transparent' }}
+                    contentStyle={{ 
+                      backgroundColor: '#fff', 
+                      borderRadius: '8px', 
+                      border: 'none', 
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      fontSize: '14px'
+                    }} 
+                  />
+                  
+                  <Bar 
+                    dataKey="Frekuensi" 
+                    fill="#DB3F59" 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={40} // Ukuran batang optimal agar tidak terlalu kurus di desktop/lebar di HP
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
