@@ -1,5 +1,6 @@
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import 'katex/dist/katex.min.css';
 import { ThemeProvider } from "next-themes";
 import Aoscompo from "@/utils/aos";
 const dmsans = DM_Sans({ subsets: ["latin"] });

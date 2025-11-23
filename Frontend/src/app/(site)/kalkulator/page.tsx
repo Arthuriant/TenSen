@@ -4,13 +4,16 @@ import { useState } from "react";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+// import "katex/dist/katex.min.css"; 
+import Latex from "react-latex-next";
 
 // --- TYPE & DATA DUMMY ---
 type TableRow = {
@@ -18,6 +21,34 @@ type TableRow = {
   xi: string;
   fi: string;
 };
+
+type ApiResult = {
+  status: string;
+  data_summary: { total_data: number; data_type: string };
+  frequency_table: {
+    no: number;
+    xi_display: string;
+    xi_value: number;
+    fi: number;
+    fk: number;
+    percentage: string;
+  }[];
+  charts: {
+    frequency_data: { label: string; value: number; tooltip_info: string }[];
+    cumulative_data: { label: string; value: number; tooltip_info: string }[];
+  };
+  steps: {
+    mean: { value: number; latex: string };
+    median: { value: number; latex: string };
+    mode: { value: number; latex: string };
+    range: { value: number; latex: string };
+    variance: { value: number; latex: string };
+    std_dev: { value: number; latex: string };
+    q1: { value: number; latex: string };
+    q3: { value: number; latex: string };
+  };
+};
+
 
 const tableData = [
   { id: 1, xi: "10 - 14", fi: 5, fk: 5, fkp: "10%" },
@@ -32,44 +63,45 @@ const chartData = tableData.map((item) => ({
   Frekuensi: item.fi,
 }));
 
-const statsData = [
-  { label: "Mean", value: "24.5", symbol: "x̄" },
-  { label: "Median dan Q2", value: "23.8", symbol: "Me" },
-  { label: "Modus", value: "26.2", symbol: "Mo" },
-  { label: "Varian", value: "42.3", symbol: "S²" },
-  { label: "Std. Deviasi", value: "6.5", symbol: "S" },
-  { label: "Jangkauan (Range)", value: "24", symbol: "R" },
-  { label: "Kuartil 1 (Q1)", value: "18.5", symbol: "Q1" },
-  { label: "Kuartil 3 (Q3)", value: "29.1", symbol: "Q3" },
-];
-
 // --- COMPONENT: ACCORDION ITEM ---
-const StepAccordion = ({ title, children }: { title: string; children: React.ReactNode }) => {
+const StepAccordion = ({
+  title,
+  latexContent,
+}: {
+  title: string;
+  latexContent: string;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-3 transition-all duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex justify-between items-center p-4 text-left font-medium transition-colors ${
-          isOpen
-            ? "bg-[#DB3F59] text-white"
-            : "bg-white dark:bg-semidark text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-        }`}
+        className={`w-full flex justify-between items-center p-4 text-left font-medium transition-colors ${isOpen
+          ? "bg-[#DB3F59] text-white"
+          : "bg-white dark:bg-semidark text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+          }`}
       >
         <span>{title}</span>
         <svg
-          className={`w-5 h-5 transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-5 h-5 transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
       {isOpen && (
-        <div className="p-5 bg-gray-50 dark:bg-darkmode text-gray-600 dark:text-gray-300 text-sm leading-relaxed border-t border-gray-200 dark:border-gray-700">
-          {children}
+        <div className="p-5 bg-gray-50 dark:bg-darkmode text-gray-800 dark:text-gray-200 text-base leading-relaxed border-t border-gray-200 dark:border-gray-700 overflow-x-auto">
+          {/* Render LaTeX disini */}
+          <Latex>{latexContent}</Latex>
         </div>
       )}
     </div>
@@ -78,16 +110,16 @@ const StepAccordion = ({ title, children }: { title: string; children: React.Rea
 
 // --- COMPONENT: SIDEBAR LINK ---
 // --- COMPONENT: SIDEBAR LINK (Updated) ---
-const SidebarLink = ({ 
-  href, 
-  label, 
-  icon, 
-  isExpanded 
-}: { 
-  href: string; 
-  label: string; 
-  icon: React.ReactNode; 
-  isExpanded: boolean; 
+const SidebarLink = ({
+  href,
+  label,
+  icon,
+  isExpanded
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  isExpanded: boolean;
 }) => (
   <a
     href={href}
@@ -100,7 +132,7 @@ const SidebarLink = ({
       {icon}
     </div>
     {/* Label dengan animasi opacity dan width */}
-    <div 
+    <div
       className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out
         ${isExpanded ? "w-32 opacity-100 ml-0" : "w-0 opacity-0 ml-0"}
       `}
@@ -112,13 +144,57 @@ const SidebarLink = ({
   </a>
 );
 
+const parseAndSplitRow = (xiStr: string, freq: number) => {
+  const cleanStr = xiStr.replace(/\s/g, "");
+
+  if (cleanStr.includes("-")) {
+    const parts = cleanStr.split("-");
+    const lower = parseFloat(parts[0]);
+    const upper = parseFloat(parts[1]);
+
+    if (!isNaN(lower) && !isNaN(upper)) {
+      const countLower = freq - 1;
+      const countUpper = 1;
+
+      const result = [];
+
+      if (countLower > 0) {
+        result.push({ value: lower, frequency: countLower });
+      }
+
+      if (freq > 0) {
+        result.push({ value: upper, frequency: countUpper });
+      }
+
+      return result;
+    }
+  }
+
+  return [{ value: parseFloat(cleanStr), frequency: freq }];
+};
+
 export default function CentralTendencyPage() {
   const [isTableInput, setIsTableInput] = useState(false);
   const [dataType, setDataType] = useState<"single" | "grouped">("single");
   const [rawInput, setRawInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [intervalSize, setIntervalSize] = useState("");
   const [tableRows, setTableRows] = useState<TableRow[]>([{ id: 1, xi: "", fi: "" }]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  const [apiResult, setApiResult] = useState<ApiResult | null>(null);
+  const [chartType, setChartType] = useState<"frequency" | "cumulative">("frequency");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleModeChange = () => {
+    setRawInput("");
+    setIntervalSize("");
+    setTableRows([{ id: 1, xi: "", fi: "" }]);
+
+    // PENTING: Hapus hasil sebelumnya agar form kembali bersih
+    // setApiResult(null);
+    setErrorMsg(null);
+  };
 
   const addRow = () => {
     const newId = tableRows.length > 0 ? tableRows[tableRows.length - 1].id + 1 : 1;
@@ -138,29 +214,160 @@ export default function CentralTendencyPage() {
     setTableRows(updatedRows);
   };
 
-  const handleModeChange = () => {
-    setRawInput("");
-    setIntervalSize("");
-    setTableRows([{ id: 1, xi: "", fi: "" }]);
+  const handleCalculate = async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    setApiResult(null);
+
+    try {
+      let payload: any = {
+        data_type: dataType === "single" ? "tunggal" : "kelompok",
+        input_mode: isTableInput ? "table" : "raw",
+      };
+
+      if (isTableInput && dataType === "grouped") {
+        const firstValidRange = tableRows.find(row => row.xi && row.xi.includes("-"));
+
+        if (firstValidRange) {
+          const cleanStr = firstValidRange.xi.replace(/\s/g, "");
+          const parts = cleanStr.split("-");
+
+          if (parts.length === 2) {
+            const lower = parseFloat(parts[0]);
+            const upper = parseFloat(parts[1]);
+
+            if (!isNaN(lower) && !isNaN(upper)) {
+              const calculatedInterval = (upper - lower) + 1;
+
+              payload.class_interval = calculatedInterval;
+            }
+          }
+        }
+      }
+
+      // ============================================================
+      // SKENARIO A & B: INPUT DERET ANGKA (RAW DATA)
+      // ============================================================
+      if (!isTableInput) {
+        if (!rawInput.trim()) {
+          throw new Error("Kolom deret angka tidak boleh kosong.");
+        }
+
+        const parsedData = rawInput
+          .split(/[\s,]+/)
+          .map((s) => parseFloat(s.trim()))
+          .filter((n) => !isNaN(n));
+
+        if (parsedData.length === 0) {
+          throw new Error("Format data salah. Pastikan hanya memasukkan angka.");
+        }
+
+        payload.raw_data = parsedData;
+
+        if (dataType === "grouped" && intervalSize) {
+          const interval = parseInt(intervalSize);
+          if (interval > 0) {
+            payload.class_interval = interval;
+          }
+        }
+      }
+
+      // ============================================================
+      // SKENARIO C & D: INPUT TABEL DISTRIBUSI
+      // ============================================================
+      else {
+        const validRows = tableRows.filter(row => row.xi && row.fi);
+
+        if (validRows.length === 0) {
+          throw new Error("Mohon isi data pada tabel terlebih dahulu.");
+        }
+
+        const parsedTable = validRows.flatMap((row, idx) => {
+          const freq = parseInt(row.fi);
+
+          if (isNaN(freq) || freq < 0) {
+            throw new Error(`Baris ke-${idx + 1}: Frekuensi harus angka valid.`);
+          }
+
+          if (dataType === "grouped") {
+            const splitResult = parseAndSplitRow(row.xi, freq);
+
+            if (splitResult.some(item => isNaN(item.value))) {
+              throw new Error(`Baris ke-${idx + 1}: Format rentang salah. Gunakan "Bawah-Atas" (cth: 151-155).`);
+            }
+
+            return splitResult;
+          }
+
+          else {
+            const val = parseFloat(row.xi);
+            if (isNaN(val)) throw new Error(`Baris ke-${idx + 1}: Nilai harus angka.`);
+
+            return [{ value: val, frequency: freq }];
+          }
+        });
+
+        payload.table_data = parsedTable;
+      }
+      console.log(JSON.stringify(payload));
+      // ============================================================
+      // 3. KIRIM KE BACKEND (POST REQUEST)
+      // ============================================================
+      const res = await fetch("http://localhost:8000/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail || "Terjadi kesalahan pada server.");
+      }
+
+      setApiResult(data);
+      console.log(data);
+      setTimeout(() => {
+        const element = document.getElementById("solusi");
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+
+    } catch (err: any) {
+      console.error("Calculation Error:", err);
+      setErrorMsg(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const statItems = [
+    { key: "mean", label: "Mean", symbol: "x̄" },
+    { key: "median", label: "Median", symbol: "Me" },
+    { key: "mode", label: "Modus", symbol: "Mo" },
+    { key: "variance", label: "Varian", symbol: "S²" },
+    { key: "std_dev", label: "Std. Deviasi", symbol: "S" },
+    { key: "range", label: "Range", symbol: "R" },
+    { key: "q1", label: "Kuartil 1 (Q1)", symbol: "Q1" },
+    { key: "q3", label: "Kuartil 3 (Q3)", symbol: "Q3" },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] dark:bg-darkmode pt-8 px-4 pb-20 transition-colors duration-300">
-      
+
       {/* MAIN GRID LAYOUT: 12 Columns */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-7 items-start transition-all duration-300 ease-in-out">
-      <aside 
+        <aside
           className={`hidden lg:block h-full transition-all duration-300 ease-in-out
             ${isSidebarOpen ? "lg:col-span-3" : "lg:col-span-1"}
           `}
         >
           <div className="sticky top-28 bg-white dark:bg-semidark rounded-xl shadow-lg py-4 px-2 dark:border-gray-800 transition-all duration-300">
-            
+
             {/* HEADER SIDEBAR (Tombol Toggle) */}
             <div className={`mb-2 flex items-center transition-all duration-300 ${isSidebarOpen ? "justify-between px-2" : "justify-center"}`}>
-              
+
               {/* Judul Navigasi (Hanya muncul saat Expanded) */}
-              <h3 
+              <h3
                 className={`text-[#DB3F59] font-bold text-lg whitespace-nowrap overflow-hidden transition-all duration-300
                   ${isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0 hidden"}
                 `}
@@ -169,7 +376,7 @@ export default function CentralTendencyPage() {
               </h3>
 
               {/* TOMBOL HAMBURGER / TOGGLE */}
-              <button 
+              <button
                 onClick={() => setSidebarOpen(!isSidebarOpen)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-[#DB3F59] transition-colors focus:outline-none"
               >
@@ -184,30 +391,36 @@ export default function CentralTendencyPage() {
 
             {/* LINKS */}
             <nav className="flex flex-col gap-1">
-              <SidebarLink 
-                href="#input" 
-                label="Input Data" 
+              <SidebarLink
+                href="#input"
+                label="Input Data"
                 isExpanded={isSidebarOpen} // Pass state ke link
-                icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>}
+                icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" /></svg>}
               />
-              <SidebarLink 
-                href="#solusi" 
-                label="Solusi & Hasil" 
-                isExpanded={isSidebarOpen}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>}
-              />
-              <SidebarLink 
-                href="#stepbystep" 
-                label="Step by Step" 
-                isExpanded={isSidebarOpen}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>}
-              />
-              <SidebarLink 
-                href="#grafik" 
-                label="Grafik" 
-                isExpanded={isSidebarOpen}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>}
-              />
+              {
+                apiResult && (
+                  <>
+                    <SidebarLink
+                      href="#solusi"
+                      label="Solusi & Hasil"
+                      isExpanded={isSidebarOpen}
+                      icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>}
+                    />
+                    <SidebarLink
+                      href="#stepbystep"
+                      label="Step by Step"
+                      isExpanded={isSidebarOpen}
+                      icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>}
+                    />
+                    <SidebarLink
+                      href="#grafik"
+                      label="Grafik"
+                      isExpanded={isSidebarOpen}
+                      icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>}
+                    />
+                  </>
+                )
+              }
             </nav>
           </div>
         </aside>
@@ -215,7 +428,7 @@ export default function CentralTendencyPage() {
         <main className={`col-span-1 flex flex-col gap-6 transition-all duration-300 ease-in-out mt-20
             ${isSidebarOpen ? "lg:col-span-9" : "lg:col-span-11"}
           `}>
-          
+
           {/* 1. BAGIAN INPUT */}
           <section id="input" >
             <div className="bg-white dark:bg-semidark rounded-xl shadow-lg overflow-hidden">
@@ -283,176 +496,339 @@ export default function CentralTendencyPage() {
                               <td className="p-3 text-center text-gray-500 dark:text-gray-400">{index + 1}</td>
                               <td className="p-3"><input type="text" value={row.xi} onChange={(e) => handleRowChange(row.id, "xi", e.target.value)} className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkmode text-gray-900 dark:text-white focus:border-[#DB3F59] focus:ring-1 focus:ring-[#DB3F59] outline-none" /></td>
                               <td className="p-3"><input type="number" value={row.fi} onChange={(e) => handleRowChange(row.id, "fi", e.target.value)} className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkmode text-gray-900 dark:text-white focus:border-[#DB3F59] focus:ring-1 focus:ring-[#DB3F59] outline-none" /></td>
-                              <td className="p-3 text-center"><button onClick={() => removeRow(row.id)} disabled={tableRows.length === 1} className="text-red-500 hover:text-red-700 disabled:opacity-30"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></td>
+                              <td className="p-3 text-center"><button onClick={() => removeRow(row.id)} disabled={tableRows.length === 1} className="text-red-500 hover:text-red-700 disabled:opacity-30"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg></button></td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                      <div className="mt-4"><button onClick={addRow} className="flex items-center gap-2 text-sm font-medium text-[#DB3F59] hover:text-red-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Tambah Baris</button></div>
+                      <div className="mt-4"><button onClick={addRow} className="flex items-center gap-2 text-sm font-medium text-[#DB3F59] hover:text-red-700 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>Tambah Baris</button></div>
                     </div>
                   )}
                 </div>
+
+                {errorMsg && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Error: </strong>
+                    <span className="block sm:inline">{errorMsg}</span>
+                  </div>
+                )}
+
                 <div className="pt-6">
-                  <button className="w-full bg-[#DB3F59] hover:bg-red-700 text-white font-bold py-4 rounded-lg shadow-lg transition-all transform active:scale-[0.98]">Hitung Hasil</button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* 2. BAGIAN SOLUSI */}
-          <section id="solusi" className="space-y-6 scroll-mt-32">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1 h-8 bg-[#DB3F59] rounded-full"></div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">1. Solusi & Hasil Akhir</h2>
-            </div>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {/* Tabel */}
-              <div className="bg-white dark:bg-semidark rounded-xl shadow-lg overflow-hidden h-fit">
-      
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-[#DB3F59] text-white">
-                        <th className="p-3 text-sm font-medium text-center">No</th>
-                        <th className="p-3 text-sm font-medium">Xi</th>
-                        <th className="p-3 text-sm font-medium text-center">Fi</th>
-                        <th className="p-3 text-sm font-medium text-center">FK</th>
-                        <th className="p-3 text-sm font-medium text-center">%</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tableData.map((row, index) => (
-                        <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                          <td className="p-3 text-center text-gray-500 dark:text-gray-400">{index + 1}</td>
-                          <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{row.xi}</td>
-                          <td className="p-3 text-center text-gray-600 dark:text-gray-300">{row.fi}</td>
-                          <td className="p-3 text-center text-gray-600 dark:text-gray-300">{row.fk}</td>
-                          <td className="p-3 text-center text-blue-600 dark:text-blue-400 font-medium">{row.fkp}</td>
-                        </tr>
-                      ))}
-                      <tr className="bg-gray-100 dark:bg-gray-800 font-bold">
-                      <td colSpan={2} className="p-3 text-right text-gray-700 dark:text-white">Total (Σ)</td>
-                      <td className="p-3 text-center text-[#DB3F59]">50</td>
-                      <td colSpan={2}></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              {/* Kartu Statistik */}
-              <div className="grid grid-cols-2 gap-2 sm:gap-3 h-fit">
-                {statsData.map((stat, idx) => (
-                  <div 
-                    key={idx} 
-                    // UPDATE: Padding diperkecil di HP (p-2.5) dan border kiri sedikit ditipiskan
-                    className="bg-white dark:bg-semidark p-2.5 sm:p-3 rounded-xl shadow-md border-l-[3px] sm:border-l-4 border-[#DB3F59] flex justify-between items-center"
+                  <button
+                    onClick={handleCalculate}
+                    disabled={isLoading}
+                    className={`w-full bg-[#DB3F59] hover:bg-red-700 text-white font-bold py-4 rounded-lg shadow-lg transition-all transform active:scale-[0.98] flex justify-center items-center
+                      ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
+                    `}
                   >
-                    <div className="min-w-0"> {/* min-w-0 penting agar truncate berfungsi di dalam flex */}
-                      
-                      {/* UPDATE: Font size label diperkecil sedikit di HP */}
-                      <p className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">
-                        {stat.label}
-                      </p>
-                      
-                      {/* UPDATE: Font size value disesuaikan agar angka besar tidak pecah layout */}
-                      <p className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mt-0.5 truncate" title={stat.value}>
-                        {stat.value}
-                      </p>
-                    </div>
-
-                    {/* UPDATE: Ukuran lingkaran icon disesuaikan (w-7 h-7 di HP) */}
-                    <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-50 dark:bg-gray-700 flex items-center justify-center text-[#DB3F59] font-serif font-bold italic text-xs sm:text-sm ml-2">
-                      {stat.symbol}
-                    </div>
-                  </div>
-                ))}
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Memproses...
+                      </span>
+                    ) : (
+                      "Hitung Hasil"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </section>
 
-          {/* 3. BAGIAN STEP BY STEP */}
-{/* 3. BAGIAN STEP BY STEP */}
-          <section id="stepbystep" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
-            
-            {/* Header Section */}
-            <div className="flex items-center gap-2 md:gap-3 mb-2">
-              <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
-                2. Step by Step Perhitungan
-              </h2>
-            </div>
-
-            {/* Content Container */}
-            {/* UPDATE: Padding p-4 di HP, p-6 di Desktop */}
-            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
-              {statsData.map((stat, idx) => (
-                <StepAccordion key={idx} title={`Cara Mencari ${stat.label}`}>
-                  <div className="space-y-3 text-sm md:text-base">
-                    <p>Penjelasan rumus dan perhitungan...</p>
+          {
+            apiResult && (
+              <>
+                {/* 2. BAGIAN SOLUSI */}
+                <section id="solusi" className="space-y-6 scroll-mt-32 animate-fade-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-1 h-8 bg-[#DB3F59] rounded-full"></div>
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                      1. Solusi & Hasil Akhir
+                    </h2>
                   </div>
-                </StepAccordion>
-              ))}
-            </div>
-          </section>
 
-          {/* 4. BAGIAN GRAFIK */}
-          <section id="grafik" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
-            
-            {/* Header Section */}
-            <div className="flex items-center gap-2 md:gap-3 mb-2">
-              <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
-                3. Visualisasi Grafik
-              </h2>
-            </div>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-            {/* Chart Container */}
-            {/* UPDATE: Tinggi h-[300px] di HP agar compact, h-[400px] di Desktop */}
-            {/* UPDATE: Padding p-4 di HP, p-6 di Desktop */}
-            <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6 h-[300px] md:h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}> 
-                  {/* Margin left -20 di Recharts kadang diperlukan di HP untuk menghemat ruang whitespace kiri */}
-                  
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} vertical={false} />
-                  
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#6b7280" 
-                    tick={{ fill: '#6b7280', fontSize: 12 }} // Font diperkecil agar muat di HP
-                    tickLine={false}
-                    axisLine={false}
-                    dy={10}
-                  />
-                  
-                  <YAxis 
-                    stroke="#6b7280" 
-                    tick={{ fill: '#6b7280', fontSize: 12 }} 
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  
-                  <Tooltip 
-                    cursor={{ fill: 'transparent' }}
-                    contentStyle={{ 
-                      backgroundColor: '#fff', 
-                      borderRadius: '8px', 
-                      border: 'none', 
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      fontSize: '14px'
-                    }} 
-                  />
-                  
-                  <Bar 
-                    dataKey="Frekuensi" 
-                    fill="#DB3F59" 
-                    radius={[4, 4, 0, 0]} 
-                    barSize={40} // Ukuran batang optimal agar tidak terlalu kurus di desktop/lebar di HP
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
+                    {/* A. TABEL DISTRIBUSI FREKUENSI */}
+                    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg overflow-hidden h-fit">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-[#DB3F59] text-white">
+                              <th className="p-3 text-sm font-medium text-center">No</th>
+                              <th className="p-3 text-sm font-medium">
+                                {apiResult.data_summary.data_type === "kelompok" ? "Rentang Kelas" : "Nilai (Xi)"}
+                              </th>
+                              <th className="p-3 text-sm font-medium text-center">Fi</th>
+                              <th className="p-3 text-sm font-medium text-center">FK</th>
+                              <th className="p-3 text-sm font-medium text-center">%</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {apiResult.frequency_table.map((row) => (
+                              <tr key={row.no} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <td className="p-3 text-center text-gray-500 dark:text-gray-400">
+                                  {row.no}
+                                </td>
+                                <td className="p-3 font-medium text-gray-800 dark:text-gray-200">
+                                  {row.xi_display}
+                                </td>
+                                <td className="p-3 text-center text-gray-600 dark:text-gray-300">
+                                  {row.fi}
+                                </td>
+                                <td className="p-3 text-center text-gray-600 dark:text-gray-300">
+                                  {row.fk}
+                                </td>
+                                <td className="p-3 text-center text-blue-600 dark:text-blue-400 font-medium">
+                                  {row.percentage}
+                                </td>
+                              </tr>
+                            ))}
+                            {/* FOOTER TOTAL */}
+                            <tr className="bg-gray-100 dark:bg-gray-800 font-bold border-t border-gray-200 dark:border-gray-700">
+                              <td colSpan={2} className="p-3 text-right text-gray-700 dark:text-white">
+                                Total (Σ)
+                              </td>
+                              <td className="p-3 text-center text-[#DB3F59]">
+                                {apiResult.data_summary.total_data}
+                              </td>
+                              <td colSpan={2}></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* B. KARTU STATISTIK (Dynamic Rendering) */}
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 h-fit">
+                      {statItems.map((item) => {
+                        // Ambil data spesifik dari apiResult berdasarkan key (mean, median, dll)
+                        // @ts-ignore (untuk bypass strict type check key akses)
+                        const statData = apiResult.steps[item.key];
+
+                        return (
+                          <div
+                            key={item.key}
+                            className="bg-white dark:bg-semidark p-2.5 sm:p-3 rounded-xl shadow-md border-l-[3px] sm:border-l-4 border-[#DB3F59] flex justify-between items-center transform transition-transform hover:scale-[1.02] duration-200"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider truncate">
+                                {item.label}
+                              </p>
+                              <p
+                                className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mt-0.5 truncate"
+                                title={String(statData.value)}
+                              >
+                                {/* Format Angka: Maksimal 2 desimal, format Indonesia (koma) */}
+                                {Number(statData.value).toLocaleString("id-ID", {
+                                  maximumFractionDigits: 8,
+                                })}
+                              </p>
+                            </div>
+                            <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-50 dark:bg-gray-700 flex items-center justify-center text-[#DB3F59] font-serif font-bold italic text-xs sm:text-sm ml-2">
+                              {item.symbol}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3. BAGIAN STEP BY STEP */}
+                <section id="stepbystep" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
+                  <div className="flex items-center gap-2 md:gap-3 mb-2">
+                    <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+                      2. Step by Step Perhitungan
+                    </h2>
+                  </div>
+
+                  <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
+                    {/* Kita gunakan komponen StepAccordion yang sudah dimodifikasi dengan <Latex> sebelumnya */}
+
+                    <StepAccordion
+                      title="Cara Mencari Mean (Rata-rata)"
+                      latexContent={apiResult.steps.mean.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Median (Nilai Tengah)"
+                      latexContent={apiResult.steps.median.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Modus"
+                      latexContent={apiResult.steps.mode.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Range (Jangkauan)"
+                      latexContent={apiResult.steps.range.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Varian"
+                      latexContent={apiResult.steps.variance.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Standar Deviasi"
+                      latexContent={apiResult.steps.std_dev.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Kuartil 1 (Q1)"
+                      latexContent={apiResult.steps.q1.latex}
+                    />
+
+                    <StepAccordion
+                      title="Cara Mencari Kuartil 3 (Q3)"
+                      latexContent={apiResult.steps.q3.latex}
+                    />
+
+                  </div>
+                </section>
+
+                {/* 4. BAGIAN GRAFIK */}
+                <section id="grafik" className="space-y-4 md:space-y-6 scroll-mt-24 md:scroll-mt-32">
+
+                  {/* HEADER SECTION: Judul & Toggle Button */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-4">
+
+                    {/* Judul */}
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="w-1 h-6 md:h-8 bg-[#DB3F59] rounded-full"></div>
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+                        3. Visualisasi Grafik
+                      </h2>
+                    </div>
+
+                    {/* Toggle Button (Frekuensi vs Kumulatif) */}
+                    <div className="bg-gray-200 dark:bg-gray-700 p-1 rounded-lg flex text-sm font-medium self-start md:self-auto shadow-inner">
+                      <button
+                        onClick={() => setChartType("frequency")}
+                        className={`px-4 py-2 rounded-md transition-all duration-300 ${chartType === 'frequency'
+                            ? 'bg-white dark:bg-semidark text-[#DB3F59] shadow-sm font-bold'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                          }`}
+                      >
+                        Frekuensi (Bar)
+                      </button>
+                      <button
+                        onClick={() => setChartType("cumulative")}
+                        className={`px-4 py-2 rounded-md transition-all duration-300 ${chartType === 'cumulative'
+                            ? 'bg-white dark:bg-semidark text-[#DB3F59] shadow-sm font-bold'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                          }`}
+                      >
+                        Kumulatif (Line)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* CHART CONTAINER */}
+                  <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6 h-[350px] md:h-[450px] transition-all duration-300 border border-transparent dark:border-gray-800">
+                    <ResponsiveContainer width="100%" height="100%">
+                      {chartType === 'frequency' ? (
+
+                        // --- OPSI 1: BAR CHART (FREKUENSI) ---
+                        <BarChart
+                          data={apiResult.charts.frequency_data}
+                          margin={{ top: 20, right: 30, left: -20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} vertical={false} />
+
+                          <XAxis
+                            dataKey="label"
+                            stroke="#9ca3af"
+                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tickLine={false}
+                            axisLine={false}
+                            dy={10}
+                          />
+
+                          <YAxis
+                            stroke="#9ca3af"
+                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+
+                          <Tooltip
+                            cursor={{ fill: 'rgba(219, 63, 89, 0.1)' }} // Highlight bar saat hover
+                            contentStyle={{
+                              backgroundColor: '#fff',
+                              borderRadius: '12px',
+                              border: 'none',
+                              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                              color: '#374151'
+                            }}
+                          />
+
+                          <Bar
+                            dataKey="value"
+                            name="Frekuensi"
+                            fill="#DB3F59"
+                            radius={[6, 6, 0, 0]} // Rounded top corners
+                            barSize={50}
+                            animationDuration={1500}
+                          />
+                        </BarChart>
+
+                      ) : (
+
+                        // --- OPSI 2: LINE CHART (KUMULATIF/OGIVE) ---
+                        <LineChart
+                          data={apiResult.charts.cumulative_data}
+                          margin={{ top: 20, right: 30, left: -20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} vertical={false} />
+
+                          <XAxis
+                            dataKey="label"
+                            stroke="#9ca3af"
+                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tickLine={false}
+                            axisLine={false}
+                            dy={10}
+                          />
+
+                          <YAxis
+                            stroke="#9ca3af"
+                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#fff',
+                              borderRadius: '12px',
+                              border: 'none',
+                              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                              color: '#374151'
+                            }}
+                          />
+
+                          <Line
+                            type="monotone" // Garis lengkung halus
+                            dataKey="value"
+                            name="Persentase Kumulatif"
+                            stroke="#DB3F59"
+                            strokeWidth={4}
+                            dot={{ r: 5, fill: "#DB3F59", strokeWidth: 2, stroke: "#fff" }}
+                            activeDot={{ r: 8, fill: "#DB3F59" }}
+                            animationDuration={1500}
+                          />
+                        </LineChart>
+                      )}
+                    </ResponsiveContainer>
+                  </div>
+                </section>
+              </>
+            )
+          }
 
         </main>
       </div>
