@@ -1,9 +1,13 @@
 
-import { Configuration } from "@/app/components/documentation/Configuration";
+import { Range } from "@/app/components/documentation/Range";
 import { DocNavigation } from "@/app/components/documentation/DocNavigation";
-import { Introduction } from "@/app/components/documentation/Introduction";
-import { PackageStructure } from "@/app/components/documentation/PackageStructure";
-import { QuickStart } from "@/app/components/documentation/QuickStart";
+import { TendensiSentral } from "@/app/components/documentation/TendensiSentral";
+import { Mean } from "@/app/components/documentation/Mean";
+import { Median } from "@/app/components/documentation/Median";
+import { Modus } from "@/app/components/documentation/Modus";
+import { Varian } from "@/app/components/documentation/Varian";
+import { Deviasi } from "@/app/components/documentation/Deviasi";
+import { Kuartil } from "@/app/components/documentation/Kuartil";
 import HeroSub2 from "@/app/components/shared/hero-sub2";
 import { Metadata } from "next";
 export const metadata: Metadata = {
@@ -25,10 +29,14 @@ export default function Page() {
                         <DocNavigation />
                     </div>
                     <div className="lg:col-span-9 col-span-12">
-                        <Introduction />
-                        <PackageStructure />
-                        <QuickStart />
-                        <Configuration />
+                        <TendensiSentral />
+                        <Mean />
+                        <Median />
+                        <Modus />
+                        <Range />
+                        <Varian />
+                        <Deviasi />
+                        <Kuartil />
                     </div>
                 </div>
             </div>

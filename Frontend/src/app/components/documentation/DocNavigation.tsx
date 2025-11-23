@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 export const DocNavigation = () => {
 
-    const [navItem, setNavItem] = useState("version");
+    const [navItem, setNavItem] = useState("tensen");
 
     function getNavItem(item:string){
         setNavItem(item)
@@ -17,24 +17,44 @@ export const DocNavigation = () => {
     const DocsNav = [
         {
             id:1,
-            navItem:"Package Versions",
-            hash:"version"
+            navItem:"Tendensi Sentral",
+            hash:"tensen"
         },
         {
             id:2,
-            navItem:"Pacakge Structure",
-            hash:"structure"
+            navItem:"Mean",
+            hash:"mean"
         },
         {
             id:3,
-            navItem:"Quick Start",
-            hash:"start"
+            navItem:"Median",
+            hash:"median"
         },
         {
             id:4,
-            navItem:"Project Configuration",
-            hash:"configuration"
+            navItem:"Modus",
+            hash:"modus"
         },
+        {
+            id:5,
+            navItem:"Jangkauan (Range)",
+            hash:"range"
+        },
+        {
+            id:6,
+            navItem:"Varian",
+            hash:"varian"
+        },
+        {
+            id:7,
+            navItem:"Deviasi",
+            hash:"deviasi"
+        },
+        {
+            id:8,
+            navItem:"Kuartil",
+            hash:"kuartil"
+        },        
     ]
 
     return (
