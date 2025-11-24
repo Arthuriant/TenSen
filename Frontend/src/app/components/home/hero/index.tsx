@@ -1,20 +1,18 @@
 "use client";
 import { useState } from "react";
+import { useRouter  } from "next/navigation";
+import Link from "next/link";
 
 const Hero = () => {
-  const [inputValue, setInputValue] = useState("");
 
-  const handleSearch = () => {
-    if (inputValue.trim()) {
-      console.log("Searching for:", inputValue);
-      // Tambahkan logika redirect atau proses hitung di sini nantinya
-    }
-  };
+  const router = useRouter();
+
+
 
   return (
     <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 bg-[#D6465C] min-h-[400px] md:min-h-[500px] flex items-center justify-center px-4">
       
-      <div className="container mx-auto relative z-10 text-center">
+      <div className="container mx-auto relative z-10 text-center flex flex-col items-center">
         
         {/* JUDUL UTAMA */}
         <h1 
@@ -23,61 +21,54 @@ const Hero = () => {
         >
           Hitung Tendensi Sentral Sekarang!
         </h1>
-
-        {/* WRAPPER INPUT PENCARIAN */}
-        <div 
-          className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-2xl p-1.5 md:p-2 flex flex-row items-center"
+        <p 
+          className="text-white/90 text-base md:text-lg mb-10 max-w-2xl font-medium"
           data-aos="fade-up"
           data-aos-delay="100"
         >
+          Analisis data statistikmu dengan cepat dan akurat. Dapatkan hasil Mean, Median, Modus, hingga Grafik visualisasi dalam hitungan detik.
+        </p>
+        <div 
+          className="flex flex-col sm:flex-row gap-4 w-full justify-center items-center"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
           
-          {/* INPUT FIELD */}
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Masukan Data..."
-            className="flex-grow px-3 py-2 md:px-4 md:py-3 text-base md:text-xl text-gray-700 placeholder:text-gray-400 bg-transparent focus:outline-none min-w-0"
-          />
-
-          {/* ICONS GROUP (Camera & Keyboard) */}
-          {/* Hidden di layar sangat kecil jika perlu, atau perkecil padding */}
-          <div className="flex items-center gap-1 md:gap-3 px-1 md:px-3 border-r border-gray-200 mr-1 md:mr-2">
-            
-            {/* Icon Camera */}
-            <button className="p-1.5 md:p-2 text-gray-400 hover:text-[#D6465C] transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-              </svg>
-            </button>
-
-            {/* Icon Keyboard */}
-            <button className="p-1.5 md:p-2 text-gray-400 hover:text-[#D6465C] transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                <path d="M6 8h.001"></path>
-                <path d="M10 8h.001"></path>
-                <path d="M14 8h.001"></path>
-                <path d="M18 8h.001"></path>
-                <path d="M6 12h.001"></path>
-                <path d="M10 12h.001"></path>
-                <path d="M14 12h.001"></path>
-                <path d="M18 12h.001"></path>
-                <path d="M7 16h10"></path>
-              </svg>
-            </button>
-          </div>
-
-          {/* TOMBOL GO */}
-          <button 
-            onClick={handleSearch}
-            className="bg-[#FF5A75] hover:bg-[#e04860] active:scale-95 text-white text-lg md:text-xl font-bold py-2 px-5 md:py-3 md:px-8 rounded-lg transition-all duration-200 shadow-md min-w-[70px] md:min-w-[100px]"
+          {/* 1. TOMBOL UTAMA (Mulai Hitung) - Style: White Solid */}
+          <Link
+            href="/kalkulator"
+            className="group relative px-8 py-3.5 bg-white text-[#D6465C] font-bold text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 w-full sm:w-auto min-w-[180px] flex items-center justify-center gap-2"
           >
-            Go
-          </button>
+            {/* Icon Calculator */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+              <line x1="8" y1="6" x2="16" y2="6"></line>
+              <line x1="16" y1="14" x2="16" y2="14"></line>
+              <line x1="12" y1="14" x2="12" y2="14"></line>
+              <line x1="8" y1="14" x2="8" y2="14"></line>
+              <line x1="16" y1="18" x2="16" y2="18"></line>
+              <line x1="12" y1="18" x2="12" y2="18"></line>
+              <line x1="8" y1="18" x2="8" y2="18"></line>
+            </svg>
+            Mulai Hitung
+          </Link>
+
+          {/* 2. TOMBOL KEDUA (Dokumentasi/Pelajari) - Style: White Outline */}
+          <Link 
+            href="/documentation"
+            className="group px-8 py-3.5 border-2 border-white/40 hover:border-white text-white font-semibold text-lg rounded-full transition-all duration-300 hover:bg-white/10 w-full sm:w-auto min-w-[180px] flex items-center justify-center gap-2 backdrop-blur-sm"
+          >
+            {/* Icon Book/Docs */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            Pelajari Materi
+          </Link>
 
         </div>
+
+
       </div>
     </section>
   );

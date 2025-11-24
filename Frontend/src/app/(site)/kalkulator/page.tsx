@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   BarChart,
   Bar,
@@ -14,6 +15,7 @@ import {
 } from "recharts";
 // import "katex/dist/katex.min.css"; 
 import Latex from "react-latex-next";
+import HeroSub3 from "@/app/components/shared/hero-sub3 copy";
 
 // --- TYPE & DATA DUMMY ---
 type TableRow = {
@@ -536,7 +538,7 @@ export default function CentralTendencyPage() {
           </section>
 
           {
-            apiResult && (
+            apiResult ? (
               <>
                 {/* 2. BAGIAN SOLUSI */}
                 <section id="solusi" className="space-y-6 scroll-mt-32 animate-fade-in">
@@ -827,6 +829,8 @@ export default function CentralTendencyPage() {
                   </div>
                 </section>
               </>
+            ) : (
+              <HeroSub3/>
             )
           }
 
