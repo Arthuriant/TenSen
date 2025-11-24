@@ -66,7 +66,7 @@ const cardData = [
     }
 ];
 
-export default function DiscoverProperties() {
+export default function Fiture() {
     return (
         <section className='dark:bg-darkmode py-10 md:py-20'>
             <div className="container lg:max-w-screen-xl md:max-w-screen-md mx-auto px-4">

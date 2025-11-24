@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-export default function CentralTendencyCard() {
+export default function NavigationCard2() {
     return (
         <section className="px-4 md:px-0 bg-[#F5F5F5] dark:bg-darkmode py-8 md:py-12">
             <div className="container lg:max-w-screen-xl md:max-w-screen-md px-0 md:px-4 mx-auto">
