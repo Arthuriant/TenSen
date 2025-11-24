@@ -3,6 +3,7 @@
 export const Modus = () => {
   return (
     <div id="modus" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       {/* Judul Modus */}
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Modus?
@@ -35,9 +36,11 @@ export const Modus = () => {
         Rumus Modus Data Tunggal
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Modus = nilai dengan frekuensi tertinggi
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Modus = nilai dengan frekuensi tertinggi
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Jika ada dua nilai yang muncul dengan frekuensi sama dan tertinggi, data
@@ -61,9 +64,11 @@ export const Modus = () => {
         Rumus Modus Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Modus = L + {"(( (f1 - f0) / ((2f1 - f0 - f2)) )"} * i)
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Modus = L + {"(( (f1 - f0) / ((2f1 - f0 - f2)) )"} * i)
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan variabel:
@@ -91,6 +96,7 @@ export const Modus = () => {
         Rumus ini digunakan untuk memperkirakan nilai modus secara lebih akurat,
         khususnya ketika data disajikan dalam bentuk interval kelas.
       </p>
+    </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@
 export const Range = () => {
   return (
     <div id="range" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       {/* Judul Range */}
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Jangkauan (Range)?
@@ -35,9 +36,11 @@ export const Range = () => {
         Rumus Jangkauan Data Tunggal
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Range = X<sub>maks</sub> - X<sub>min</sub>
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Range = X<sub>maks</sub> - X<sub>min</sub>
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Di mana:
@@ -72,9 +75,11 @@ export const Range = () => {
         Rumus Jangkauan Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Range = Batas Atas Tertinggi - Batas Bawah Terendah
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Range = Batas Atas Tertinggi - Batas Bawah Terendah
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan variabel:
@@ -93,6 +98,7 @@ export const Range = () => {
         Jangkauan pada data kelompok membantu memberikan gambaran lebar distribusi 
         keseluruhan dari data yang disajikan dalam bentuk interval kelas.
       </p>
+    </div>
     </div>
   );
 };

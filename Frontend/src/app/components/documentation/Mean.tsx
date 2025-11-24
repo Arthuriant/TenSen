@@ -3,6 +3,7 @@
 export const Mean = () => {
   return (
     <div id="mean" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Mean (Rata-Rata)
       </h2>
@@ -99,6 +100,7 @@ export const Mean = () => {
         nilai rata-rata dari seluruh data meskipun datanya sudah dipadatkan dalam
         bentuk interval.
       </p>
+    </div>
     </div>
   );
 };

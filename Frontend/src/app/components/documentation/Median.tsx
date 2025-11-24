@@ -3,7 +3,8 @@
 export const Median = () => {
   return (
     <div id="median" className="scroll-m-28 md:scroll-m-[180px] mt-10">
-      {/* Judul Median */}
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
+      {/* Judul Median */}  
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Median?
       </h2>
@@ -40,17 +41,21 @@ export const Median = () => {
         Jika jumlah data <b>n</b> ganjil:
       </p>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4">
-        Median = x<sub>(n+1)/2</sub>
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Median = x<sub>(n+1)/2</sub>
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-3">
         Jika jumlah data <b>n</b> genap:
       </p>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4">
-        Median = (x<sub>n/2</sub> + x<sub>(n/2)+1</sub>) / 2
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Median = (x<sub>n/2</sub> + x<sub>(n/2)+1</sub>) / 2
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Rumus ini digunakan dengan mengambil data urutan ke tengah berdasarkan
@@ -73,9 +78,11 @@ export const Median = () => {
         Rumus Median Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Median = L + {"(( (n/2 - Fk) / f )"} * i)
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Median = L + {"(( (n/2 - Fk) / f )"} * i)
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Penjelasan variabel:
@@ -103,6 +110,7 @@ export const Median = () => {
         Rumus ini digunakan untuk memperkirakan nilai tengah berdasarkan distribusi
         kelas frekuensi sehingga cocok untuk data dalam skala besar.
       </p>
+    </div>
     </div>
   );
 };
