@@ -3,6 +3,7 @@
 export const Kuartil = () => {
   return (
     <div id="kuartil" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       {/* Judul Kuartil */}
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Kuartil?
@@ -33,9 +34,11 @@ export const Kuartil = () => {
         Rumus Kuartil Data Tunggal
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        Qk = (k (n + 1)) / 4
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          Qk = (k (n + 1)) / 4
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan:
@@ -61,9 +64,11 @@ export const Kuartil = () => {
         Rumus Kuartil Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-{`Qk = L + (( (k * N/4) - F ) / f ) * i`}
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          {`Qk = L + (( (k * N/4) - F ) / f ) * i`}
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan variabel:
@@ -80,6 +85,7 @@ export const Kuartil = () => {
       <p className="text-base text-midnight_text dark:text-gray">
         Kuartil membantu memahami penyebaran data dan posisi relatif dalam distribusi.
       </p>
+    </div>
     </div>
   );
 };

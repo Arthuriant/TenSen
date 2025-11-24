@@ -1,9 +1,10 @@
 "use client";
 
 export const TendensiSentral = () => {
-  return (
+  return (    
     <div id="tensen" className="scroll-m-28 md:scroll-m-[180px] mt-10">
       {/* Judul Tendensi Sentral */}
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Tendensi Sentral?
       </h2>
@@ -91,6 +92,7 @@ export const TendensiSentral = () => {
         statistik menjadi lebih lengkap. Kombinasi ini membantu memahami pola
         data secara keseluruhan dan membuat keputusan analitis yang lebih akurat.
       </p>
+      </div>
     </div>
   );
 };

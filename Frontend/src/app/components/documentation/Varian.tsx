@@ -3,6 +3,7 @@
 export const Varian = () => {
   return (
     <div id="varian" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       {/* Judul Varian */}
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Varian?
@@ -34,9 +35,11 @@ export const Varian = () => {
         Rumus Varian Data Tunggal
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        σ² = (Σ (x - x̄)²) / n
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          σ² = (Σ (x - x̄)²) / n
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan:
@@ -65,9 +68,11 @@ export const Varian = () => {
         Rumus Varian Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        σ² = (Σ f (xᵢ - x̄)²) / Σf
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          σ² = (Σ f (xᵢ - x̄)²) / Σf
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray mb-4">
         Keterangan:
@@ -82,6 +87,7 @@ export const Varian = () => {
       <p className="text-base text-midnight_text dark:text-gray">
         Rumus ini memberikan ukuran penyebaran data berdasarkan kelas interval.
       </p>
+    </div>
     </div>
   );
 };

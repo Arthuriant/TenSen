@@ -3,6 +3,7 @@
 export const Deviasi = () => {
   return (
     <div id="deviasi" className="scroll-m-28 md:scroll-m-[180px] mt-10">
+    <div className="bg-white dark:bg-semidark rounded-xl shadow-lg p-4 md:p-6">
       {/* Judul Deviasi */}
       <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
         Apa Itu Deviasi Standar?
@@ -32,9 +33,11 @@ export const Deviasi = () => {
         Rumus Deviasi Standar Data Tunggal
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        σ = √( Σ (x - x̄)² / n )
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          σ = √( Σ (x - x̄)² / n )
+        </p>
+      </div>
 
       {/* -------------------------------------------------------------------------------- */}
       {/* DEVIASI DATA KELOMPOK */}
@@ -51,13 +54,16 @@ export const Deviasi = () => {
         Rumus Deviasi Standar Data Kelompok
       </h4>
 
-      <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md text-sm mb-4 whitespace-pre-wrap">
-        σ = √( Σ f (xᵢ - x̄)² / Σf )
-      </pre>
+      <div className="bg-gray-100 dark:bg-darkmode p-4 rounded-md mb-4">
+        <p className="text-base text-black dark:text-white font-mono">
+          σ = √( Σ f (xᵢ - x̄)² / Σf )
+        </p>
+      </div>
 
       <p className="text-base text-midnight_text dark:text-gray">
         Deviasi standar memberikan informasi penyebaran data yang lebih rinci dibandingkan varian.
       </p>
+    </div>
     </div>
   );
 };
