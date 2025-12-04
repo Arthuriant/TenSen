@@ -76,6 +76,9 @@ const StepAccordion = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
+
+    
+
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-3 transition-all duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -315,7 +318,7 @@ export default function CentralTendencyPage() {
       // ============================================================
       // 3. KIRIM KE BACKEND (POST REQUEST)
       // ============================================================
-      const res = await fetch("http://localhost:8000/calculate", {
+      const res = await fetch("https://ab4621ba733e.ngrok-free.app/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

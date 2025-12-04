@@ -487,43 +487,38 @@ def calculate_range_latex(df, data_type,precision=2):
 
     # --- KONDISI 2: DATA KELOMPOK ---
     else:
-        # Rumus: Tepi Atas Kelas Terakhir - Tepi Bawah Kelas Pertama
+        # Rumus: Nilai Tengah Kelas Terakhir - Nilai Tengah Kelas Pertama
         
-        # 1. Identifikasi Kelas Pertama & Tepi Bawah (Tb)
+        # 1. Identifikasi Kelas Pertama & Nilai Tengahnya
         first_row = df.iloc[0]
-        # Parsing "10 - 19"
-        first_interval = str(first_row['xi_display']).split(' - ')
-        limit_bawah = int(first_interval[0])
-        Tb = limit_bawah - 0.5
+        xi_min = first_row['xi_value'] # Nilai Tengah Kelas Pertama
         
-        # 2. Identifikasi Kelas Terakhir & Tepi Atas (Ta)
+        # 2. Identifikasi Kelas Terakhir & Nilai Tengahnya
         last_row = df.iloc[-1]
-        last_interval = str(last_row['xi_display']).split(' - ')
-        limit_atas = int(last_interval[1])
-        Ta = limit_atas + 0.5
+        xi_max = last_row['xi_value'] # Nilai Tengah Kelas Terakhir
         
         # 3. Hitung
-        range_val = Ta - Tb
+        range_val = xi_max - xi_min
         
         latex_str = (
             r"\begin{aligned}"
             # Langkah 1: Rumus
             # r"& \text{1. Rumus (Data Kelompok):}" "\\"
-            r"& R = Ta_{akhir} - Tb_{awal} \\"
-            r"& \text{(Tepi Atas Kelas Terakhir - Tepi Bawah Kelas Pertama)} \\[1em]"
+            r"& R = x_{i(max)} - x_{i(min)} \\"
+            r"& \text{(Nilai Tengah Kelas Terakhir - Nilai Tengah Kelas Pertama)} \\[1em]"
             
             # Langkah 2: Identifikasi
             # r"& \text{2. Identifikasi Nilai:}" "\\"
-            fr"& \text{{Kelas Pertama: }} \mathbf{{{first_row['xi_display']}}} \rightarrow Tb = {limit_bawah} - 0.5 = {fmt(Tb)} \\"
-            fr"& \text{{Kelas Terakhir: }} \mathbf{{{last_row['xi_display']}}} \rightarrow Ta = {limit_atas} + 0.5 = {fmt(Ta)} \\[1em]"
+            fr"& \text{{Kelas Pertama: }} \mathbf{{{first_row['xi_display']}}} \rightarrow x_{{i(min)}} = {fmt(xi_min, precision)} \\"
+            fr"& \text{{Kelas Terakhir: }} \mathbf{{{last_row['xi_display']}}} \rightarrow x_{{i(max)}} = {fmt(xi_max, precision)} \\[1em]"
             
             # Langkah 3: Substitusi
             # r"& \text{3. Substitusi:}" "\\"
-            fr"& R = {fmt(Ta,precision)} - {fmt(Tb,precision)} \\[1em]"
+            fr"& R = {fmt(xi_max, precision)} - {fmt(xi_min, precision)} \\[1em]"
             
             # Langkah 4: Hasil
             # r"& \text{4. Hasil Akhir:}" "\\"
-            fr"& \mathbf{{R = {fmt(range_val,precision)}}}"
+            fr"& \mathbf{{R = {fmt(range_val, precision)}}}"
             r"\end{aligned}"
         )
         

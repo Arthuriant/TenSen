@@ -29,8 +29,9 @@ export default function NavigationCard2() {
 
                         {/* Tombol: Center di HP, Kiri di Desktop */}
                         <div className='flex justify-center md:justify-start'>
-                            <Link 
-                                href="/kalkulator" 
+                            <Link
+                                target="_blank" 
+                                href="/file/TENSEN_User_Guide.pdf" 
                                 className="inline-block bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 uppercase tracking-wider text-xs md:text-sm shadow-md hover:shadow-lg"
                             >
                                 Pelajari Selengkapnya

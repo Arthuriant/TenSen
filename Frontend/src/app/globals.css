@@ -26,6 +26,19 @@ html {
   padding-right: 2.5rem; /* space for arrow */
 }
 
+.chart-container * {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+svg:focus,
+svg *:focus {
+  outline: none !important;
+}
+
+.recharts-wrapper:focus,
+.recharts-wrapper *:focus {
+  outline: none !important;
+}
 
 @layer utilities {
     .text-balance {

@@ -1,5 +1,8 @@
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+export const metadata = {
+  title: "Statistika – Central Tendency Calculator",
+};
 import 'katex/dist/katex.min.css';
 import { ThemeProvider } from "next-themes";
 import Aoscompo from "@/utils/aos";
