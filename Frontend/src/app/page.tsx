@@ -5,7 +5,7 @@ import Fiture from './components/home/fiture';
 import NavigationCard from './components/home/cardview';
 import NavigationCard2 from './components/home/cardview2';
 export const metadata: Metadata = {
-  title: "Property",
+  title: "Tensen | Dashboard",
 };
 
 export default function Home() {
