@@ -11,7 +11,7 @@ import { Kuartil } from "@/app/components/documentation/Kuartil";
 import HeroSub2 from "@/app/components/shared/hero-sub2";
 import { Metadata } from "next";
 export const metadata: Metadata = {
-    title: "Documentation | Property-pro",
+    title: "Tensen | Dokumentasi",
 };
 
 export default function Page() {
