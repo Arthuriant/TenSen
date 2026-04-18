@@ -314,7 +314,7 @@ export default function CentralTendencyClient() {
       // 3. KIRIM KE BACKEND (POST REQUEST)
       // ============================================================
       const res = await fetch(
-        "https://ab4621ba733e.ngrok-free.app/calculate",
+        "http://localhost:8000/calculate",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
